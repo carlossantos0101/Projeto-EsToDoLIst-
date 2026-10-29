@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <!-- Configurações básicas da página -->
+  <meta charset="UTF-8">
+
+  <!-- Permite que a página funcione em celulares e computadores -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Nome que aparece na aba do navegador -->
+  <title>EsToDoList</title>
+
+  <!-- Importa o Tailwind CSS para estilizar a página -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Acabamentos visuais adicionais -->
+  <style>
+    /* Deixa a rolagem da página mais suave */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Campos de texto, data e pesquisa quando selecionados */
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    input[type="search"]:focus {
+      border-color: #818CF8;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Transição suave para os campos */
+    input {
+      transition: border-color 300ms ease-in-out,
+                  box-shadow 300ms ease-in-out;
+    }
+
+    /* Tarefa concluída: nome riscado e cinza */
+    li:has(input[type="checkbox"]:checked) .task-title {
+      color: #7F8D84;
+      text-decoration: line-through;
+      text-decoration-thickness: 1.5px;
+    }
+
+    /* Data da tarefa concluída */
+    li:has(input[type="checkbox"]:checked) .task-date {
+      color: #748078;
+    }
+
+    /* Fundo mais discreto para tarefas concluídas */
+    li:has(input[type="checkbox"]:checked) {
+      background-color: #17211C;
+    }
+
+    /* Destaque de foco para navegação com teclado */
+    button:focus-visible {
+      outline: 2px solid #818CF8;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+
+<!-- CORPO DA PÁGINA -->
+<!-- Define o fundo escuro, a cor padrão dos textos e a altura mínima -->
+<body class="min-h-screen bg-[#101713] text-[#F1F5F2]">
+
+  <!-- ================================================== -->
+  <!-- 1. CABEÇALHO -->
+  <!-- Apresenta o nome do projeto e seu objetivo -->
+  <!-- ================================================== -->
+
+  <header class="bg-[#176B50] text-white">
+
+    <!-- Organiza o título e o subtítulo na mesma linha -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+
+      <!-- Nome do sistema -->
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">EsToDoList</h1>
+
+      <!-- Frase que explica a finalidade do projeto -->
+      <span class="text-sm sm:text-base text-[#D7E9DF]">
+        Organize sua rotina escolar
+      </span>
+
+    </div>
+  </header>
+
+
+  <!-- ================================================== -->
+  <!-- 2. CONTEÚDO PRINCIPAL -->
+  <!-- Divide a página em três colunas no notebook -->
+  <!-- e mantém uma coluna em telas menores -->
+  <!-- ================================================== -->
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+
+    <!-- ================================================== -->
+    <!-- 3. COLUNA 1: FORMULÁRIO, PESQUISA E FILTROS -->
+    <!-- Permite inserir tarefas, pesquisar e escolher filtros -->
+    <!-- No notebook, acompanha a rolagem da página -->
+    <!-- ================================================== -->
+
+    <section class="bg-[#1A2520] rounded-xl shadow-lg p-4 space-y-4 border border-[#304239] h-fit lg:sticky lg:top-6 lg:self-start">
+
+      <!-- 3.1. FORMULÁRIO DE CADASTRO -->
+      <!-- Contém os campos para informar a tarefa e sua data -->
+
+      <form class="flex flex-col gap-3">
+
+        <!-- Campo para digitar o nome da tarefa -->
+        <input
+          type="text"
+          placeholder="Nova tarefa"
+          aria-label="Nome da nova tarefa"
+          class="w-full min-w-0 bg-[#25332B] text-[#F1F5F2] placeholder-[#A7B8AD] border border-[#405448] rounded-lg px-3 py-3 transition-colors duration-300 ease-in-out"
+        >
+
+        <!-- Campo para selecionar a data da tarefa -->
+        <input
+          type="date"
+          aria-label="Data da tarefa"
+          class="w-full min-w-0 bg-[#25332B] text-[#F1F5F2] border border-[#405448] rounded-lg px-3 py-3 transition-colors duration-300 ease-in-out"
+        >
+
+        <!-- Botão para enviar o formulário -->
+        <button
+          type="submit"
+          class="w-full bg-[#21845D] text-white rounded-lg px-4 py-3 font-semibold transition-colors duration-300 ease-in-out hover:bg-[#2A9B6E] active:scale-[0.98]"
+        >
+          Adicionar
+        </button>
+
+      </form>
+
+
+      <!-- 3.2. CAMPO DE PESQUISA -->
+      <!-- Permite digitar o nome de uma tarefa para procurá-la -->
+
+      <input
+        type="search"
+        placeholder="Pesquisar tarefa..."
+        aria-label="Pesquisar tarefa"
+        class="w-full min-w-0 bg-[#25332B] text-[#F1F5F2] placeholder-[#A7B8AD] border border-[#405448] rounded-lg px-3 py-3 transition-colors duration-300 ease-in-out"
+      >
+
+
+      <!-- 3.3. FILTROS DE TAREFAS -->
+      <!-- Os botões representam as categorias de tarefas -->
+
+      <div class="flex flex-wrap gap-2">
+
+        <!-- Exibe a opção de visualizar todas as tarefas -->
+        <button
+          type="button"
+          class="px-4 py-2 rounded-full bg-[#21845D] text-white whitespace-nowrap transition-colors duration-300 ease-in-out hover:bg-[#2A9B6E]"
+        >
+          Todas
+        </button>
+
+        <!-- Opção para visualizar tarefas ainda não concluídas -->
+        <button
+          type="button"
+          class="px-4 py-2 rounded-full bg-[#2B3931] text-[#D5E1D9] whitespace-nowrap transition-colors duration-300 ease-in-out hover:bg-[#3A4B40]"
+        >
+          Pendentes
+        </button>
+
+        <!-- Opção para visualizar tarefas já concluídas -->
+        <button
+          type="button"
+          class="px-4 py-2 rounded-full bg-[#2B3931] text-[#D5E1D9] whitespace-nowrap transition-colors duration-300 ease-in-out hover:bg-[#3A4B40]"
+        >
+          Concluídas
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================================================== -->
+    <!-- 4. COLUNAS 2 E 3: LISTA DE TAREFAS -->
+    <!-- Apresenta as tarefas cadastradas -->
+    <!-- ================================================== -->
+
+    <section class="min-w-0 lg:col-span-2">
+
+      <!-- Lista que agrupa todas as tarefas -->
+      <ul class="space-y-3">
+
+
+        <!-- ================================================== -->
+        <!-- 4.1. PRIMEIRA TAREFA -->
+        <!-- Trabalho de História -->
+        <!-- ================================================== -->
+
+        <li class="bg-[#1A2520] border border-[#304239] rounded-xl shadow-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-all duration-300 ease-in-out hover:border-[#4D8065] hover:shadow-xl">
+
+          <!-- Agrupa a caixa de conclusão, o nome e a data -->
+          <label class="flex items-start gap-3 min-w-0">
+
+            <!-- Caixa para marcar a tarefa como concluída -->
+            <input
+              type="checkbox"
+              aria-label="Marcar Trabalho de História como concluído"
+              class="mt-1 w-5 h-5 accent-[#36B37E] shrink-0"
+            >
+
+            <!-- Informações da tarefa -->
+            <span class="min-w-0">
+
+              <!-- Nome da tarefa -->
+              <span class="task-title block  font-medium text-[#F1F5F2] transition-colors duration-300">
+                Trabalho de História
+              </span>
+
+              <!-- Data da tarefa -->
+              <span class="task-date text-sm text-[#A7B8AD] transition-colors duration-300">
+                20/10/2026
+              </span>
+
+            </span>
+
+          </label>
+
+          <!-- Botões de edição e exclusão -->
+          <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+
+            <!-- Botão para editar a tarefa -->
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-[#2B3931] text-[#E2EBE5] text-sm sm:text-base transition-all duration-300 ease-in-out hover:bg-[#3A4B40] active:scale-95"
+            >
+              Editar
+            </button>
+
+            <!-- Botão para excluir a tarefa -->
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-[#6F3535] text-[#FFE3E0] text-sm sm:text-base transition-all duration-300 ease-in-out hover:bg-[#874242] active:scale-95"
+            >
+              Excluir
+            </button>
+
+          </div>
+
+        </li>
+
+
+        <!-- ================================================== -->
+        <!-- 4.2. SEGUNDA TAREFA -->
+        <!-- Estudar para a prova de Matemática -->
+        <!-- ================================================== -->
+
+        <li class="bg-[#1A2520] border border-[#304239] rounded-xl shadow-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-all duration-300 ease-in-out hover:border-[#4D8065] hover:shadow-xl">
+
+          <!-- Agrupa a caixa de conclusão, o nome e a data -->
+          <label class="flex items-start gap-3 min-w-0">
+
+            <!-- Caixa para marcar a tarefa como concluída -->
+            <input
+              type="checkbox"
+              aria-label="Marcar Estudar para a prova de Matemática como concluído"
+              class="mt-1 w-5 h-5 accent-[#36B37E] shrink-0"
+            >
+
+            <!-- Informações da tarefa -->
+            <span class="min-w-0">
+
+              <!-- Nome da tarefa -->
+              <span class="task-title block  font-medium text-[#F1F5F2] transition-colors duration-300">
+                Estudar para a prova de Matemática
+              </span>
+
+              <!-- Data da tarefa -->
+              <span class="task-date text-sm text-[#A7B8AD] transition-colors duration-300">
+                22/10/2026
+              </span>
+
+            </span>
+
+          </label>
+
+          <!-- Botões de edição e exclusão -->
+          <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+
+            <!-- Botão para editar a tarefa -->
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-[#2B3931] text-[#E2EBE5] text-sm sm:text-base transition-all duration-300 ease-in-out hover:bg-[#3A4B40] active:scale-95"
+            >
+              Editar
+            </button>
+
+            <!-- Botão para excluir a tarefa -->
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-[#6F3535] text-[#FFE3E0] text-sm sm:text-base transition-all duration-300 ease-in-out hover:bg-[#874242] active:scale-95"
+            >
+              Excluir
+            </button>
+
+          </div>
+
+        </li>
+
+
+        <!-- ================================================== -->
+        <!-- 4.3. TERCEIRA TAREFA -->
+        <!-- Entregar projeto no GitHub -->
+        <!-- ================================================== -->
+
+        <li class="bg-[#1A2520] border border-[#304239] rounded-xl shadow-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-all duration-300 ease-in-out hover:border-[#4D8065] hover:shadow-xl">
+
+          <!-- Agrupa a caixa de conclusão, o nome e a data -->
+          <label class="flex items-start gap-3 min-w-0">
+
+            <!-- Caixa marcada porque a tarefa está concluída -->
+            <input
+              type="checkbox"
+              checked
+              aria-label="Marcar Entregar projeto no GitHub como concluído"
+              class="mt-1 w-5 h-5 accent-[#36B37E] shrink-0"
+            >
+
+            <!-- Informações da tarefa -->
+            <span class="min-w-0">
+
+              <!-- Nome da tarefa -->
+              <span class="task-title block  font-medium text-[#F1F5F2] transition-colors duration-300">
+                Entregar projeto no GitHub
+              </span>
+
+              <!-- Data da tarefa -->
+              <span class="task-date text-sm text-[#A7B8AD] transition-colors duration-300">
+                08/10/2026
+              </span>
+
+            </span>
+
+          </label>
+
+          <!-- Botões de edição e exclusão -->
+          <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+
+            <!-- Botão para editar a tarefa -->
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-[#2B3931] text-[#E2EBE5] text-sm sm:text-base transition-all duration-300 ease-in-out hover:bg-[#3A4B40] active:scale-95"
+            >
+              Editar
+            </button>
+
+            <!-- Botão para excluir a tarefa -->
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-[#6F3535] text-[#FFE3E0] text-sm sm:text-base transition-all duration-300 ease-in-out hover:bg-[#874242] active:scale-95"
+            >
+              Excluir
+            </button>
+
+          </div>
+
+        </li>
+
+      </ul>
+
+
+      <!-- ================================================== -->
+      <!-- 5. CONTADOR DE TAREFAS PENDENTES -->
+      <!-- Informa quantas tarefas ainda precisam ser feitas -->
+      <!-- ================================================== -->
+
+      <p class="mt-4 text-sm text-[#A7B8AD]">
+        2 tarefas pendentes
+      </p>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
